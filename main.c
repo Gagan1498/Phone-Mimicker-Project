@@ -19,22 +19,19 @@
 #define TICK_PERIOD( ms) (GetPeripheralClock()*(ms)) /8000
 #define PASSWORD_LEN    4  // Password length
 
-void CreatePinKeypad();
-void RTCInit();
-void Alarm();
-void User_SetAlarm();
-void User_ResetAlarm();
+void RTCInit(); //RTC initialization function
+void initADC(void); //ADC initialization function
 
-void AlarmVal_set();
-void  RTCC_ALM_Reset();
-void Temperature();
-void MyGOLDraw();
-void initADC(void);
-void CreateButtons();
-void SetCommandKeys(TEXTENTRY *pTe);
-void CreatePinKeypad();
-void CreateNumPinKeypad();
-void main_page();
+void CreateButtons(); //Function to create button for different functionlities such as alarm, settings, temperature measurement, etc.
+void SetCommandKeys(TEXTENTRY *pTe); //Function to create and provide function to 2 command keys - "Enter" and "Delete"
+void CreateNumPinKeypad(); //Function to create keypad including numbers from 0-9 and only a couple of aphabets
+void main_page(); //Function to initializes and create the page to enter the pin for unlocking the board
+void CreatePinKeypad(); //Function to create PIN keypad to unlock the board (Similar to unlocking a smartphone by entering a pin)
+void Alarm(); //Function to create buttons to set alarm time. (The alarm uses screen background color change to show the alarm turn on)
+void User_SetAlarm(); //Function to allow the user to set the alarm time 
+void User_ResetAlarm(); //Function to reset alarm time 
+void AlarmVal_set(); //Function to set the frequency of alarm
+void Temperature(); //Function to determine the temperature and display on screen (Leverages the temperature sensor present on evaluation board).
 
 static int alarm_index=0;
 static int index=0;
@@ -137,7 +134,7 @@ void CreateButtons()
             );
 }
 
-void Delay_us(unsigned int delay)
+void Delay_us(unsigned int delay) //Provides us delay
 {
     for (i = 0; i < delay; i++)
         {
@@ -227,25 +224,25 @@ void main_page()
     CreatePinKeypad();
 }
 
-WORD GOLMsgCallback(WORD objMsg, OBJ_HEADER* pObj, GOL_MSG *pMsg)
+WORD GOLMsgCallback(WORD objMsg, OBJ_HEADER* pObj, GOL_MSG *pMsg) 
 {
 switch(GetObjID(pObj))
     {
-     case 1:  //alarm
+     case 1:  //Alarm button pressed
            DelayMs(1000);
            GOLFree();
            LCDClear();          
            Alarm();
         break;
            
-    case 2: //Temperature
+    case 2: //Temperature button pressed
             DelayMs(1000);
             GOLFree();
             LCDClear();
             Temperature();
         break;
         
-    case 4://change pin screen
+    case 4: //Change pin screen
             DelayMs(1000);
             GOLFree();
             LCDClear();
@@ -256,16 +253,15 @@ switch(GetObjID(pObj))
             BtnCreate(44,250,180,310,230,0,BTN_DRAW,NULL,"Done",NULL); 
         break;
         
-    case 44://done after changing pin
+    case 44: //Show the main page after PIN is changed
             DelayMs(1000);
             pinapp_active=0;
             GOLFree();
             LCDClear();
             CreateButtons();
-            //while(1);
         break;
 
-    case 11: //set key pressed in alarm screen
+    case 11: //Set button pressed in alarm screen
             DelayMs(1000);
             GOLFree();
             LCDClear();
@@ -273,21 +269,21 @@ switch(GetObjID(pObj))
             User_SetAlarm();
         break;
        
-    case 12: //reset key pressed in alarm screen 
+    case 12: //Reset button pressed in alarm screen 
             DelayMs(1000);
             GOLFree();
             LCDClear();
             User_ResetAlarm();      
         break;
    
-    case 111: //DONE
+    case 111: //DONE button pressed 
             DelayMs(1500);
             GOLFree();        
             LCDClear();
             alarmapp_active=0;
             AlarmVal_set();
  
-    case 112://BACK
+    case 112://BACK button pressed
             DelayMs(1500);
             GOLFree();
             LCDClear();
@@ -295,19 +291,19 @@ switch(GetObjID(pObj))
             CreateButtons();
         break;
      
-    case 3: //Setting
+    case 3: //Setting button pressed
             DelayMs(1500);
             GOLFree();
             LCDClear();
             BtnCreate(31,80,20,260,120,0,BTN_DRAW,NULL,"Change Color",NULL);
         break;
         
-    case 99:
+    case 99: //Some delay and then show the main page
             DelayMs(1500);
             main_page();
         break;
                     
-    case 31: //"change color" next screen
+    case 31: //Screen to choose background color
             DelayMs(1500);
             GOLFree();
             LCDClear();
@@ -320,7 +316,7 @@ switch(GetObjID(pObj))
             BtnCreate(314,210,130,310,230,0,BTN_DRAW,NULL,"WHITE",NULL);
         break;
        
-    case 311://yellow 
+    case 311: //Set yellow background color 
             DelayMs(1500);
             LCDSetBackground( YELLOW);
             GOLFree();
@@ -328,7 +324,7 @@ switch(GetObjID(pObj))
             CreateButtons();
         break;
    
-    case 312: //blue color
+    case 312: ////Set blue background color
             DelayMs(1500);
             LCDSetBackground( BLUE);     
             GOLFree();
@@ -336,7 +332,7 @@ switch(GetObjID(pObj))
             CreateButtons();
         break;
        
-    case 313: //green color
+    case 313: ////Set green background color
             DelayMs(1500);
             LCDSetBackground( GREEN);
             GOLFree();
@@ -344,7 +340,7 @@ switch(GetObjID(pObj))
             CreateButtons();
         break;
        
-    case 314: //white color
+    case 314: ////Set white background color
             DelayMs(1500);
             LCDSetBackground( WHITE);          
             GOLFree();
@@ -352,10 +348,10 @@ switch(GetObjID(pObj))
             CreateButtons();
         break;
         
-    case 100: //the keypad case (to press pins)
+    case 100: //Display the keypad for entering PIN
         if((my)->pActiveKey->index == 11){
            
-            if(XcharStrCmp(TeGetBuffer((TEXTENTRY *)pObj), (XCHAR *)PassWord, PASSWORD_LEN) == 1)
+            if(XcharStrCmp(TeGetBuffer((TEXTENTRY *)pObj), (XCHAR *)PassWord, PASSWORD_LEN) == 1) //Correct password entered
                 {
                     DelayMs(1000);
                     GOLFree();
@@ -363,7 +359,7 @@ switch(GetObjID(pObj))
                     CreateButtons();
                 }
                        
-            else
+            else //Wrong password entered
                 {
                     DelayMs(1000);
                     LCDClear();
@@ -375,17 +371,7 @@ switch(GetObjID(pObj))
         }
         break;
 
-    case 60:
-    case 61:
-    case 62:
-    case 63:
-    case 64:
-    case 65:
-    case 66:
-    case 67:
-    case 68:
-    case 69:                
-        
+    case 69: //Configurations for setting alarm                
         if(pinapp_active==1)
             {   
                 PassWord[index]=0;
@@ -442,16 +428,10 @@ switch(GetObjID(pObj))
                 else
                 {
                     //do nothing
-                }
-                  
+                }    
         break;
 
-               /* alarm_entered[alarm_index]=(GetObjID(pObj))%60;
-                alarm_index++;*/
-                //DelayMs(800);
-               // break;
-       
-    case 8://Display Temperature
+    case 8: //Display Temperature
             DelayMs(1000);
             GOLFree();
             LCDClear();
@@ -466,7 +446,7 @@ switch(GetObjID(pObj))
             CreateButtons();
         break;
 
-    case 101: //when wrong pin is enetered, this will direct back to keypad screen
+    case 101: //When wrong pin is enetered, this will direct back to keypad screen
             GOLFree();
             main_page();
         break;
@@ -498,7 +478,7 @@ void __ISR _T3Interrupt(void)
     TouchDetectPosition();
 }
 
-void Init()
+void Init() //Initialize all functions and display the "Enter Pin" screen
 {  
     LCDInit();
     LCDHome();
@@ -586,7 +566,6 @@ void User_SetAlarm()
 
 void User_ResetAlarm()
 { 
-  // RTCC_ALM_Reset();
   _ALRMPTR=1;
   ALRMVAL = 0X0000; // MONTH-1/DAY-1
   ALRMVAL=0x0000;  
@@ -607,17 +586,6 @@ void AlarmVal_set()
     _RTCIF = 0; // clear interrupt flag
     _RTCIE = 1; // enable interrupt
     //Clear_keysdata();
-}
-       
-void  RTCC_ALM_Reset()
-{
-    _ALRMPTR=1;
-    ALRMVAL = 0X0000; // MONTH-1/DAY-1
-    ALRMVAL=0x0000;
-   
-    // disable alarm
-    _ALRMEN = 0;
-    _RTCIF = 0; // clear interrupt flag
 }
 
 void _ISR _RTCCInterrupt(void)
@@ -719,7 +687,7 @@ void draw_keypad()
         NULL);  
 }
 
-int main(void)
+int main(void) //main function
 {
     Init();
     LCDSetBackground( RED);
