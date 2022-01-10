@@ -9,6 +9,8 @@ This project dipicts some of the many functionalities of a smart phone such as:
 6. Alarm settings
 7. Keyboard for setting contact information
 
-Created on PIC24 Mikroemdia Board. This project uses the Microchip Libraries for Applications (MLA) and the Graphics Object Layer (GOL) library provided by Microchip. The chip on the board is "PIC24EP512GU810". The project is made by:
+The project does not contain the libraries or supporting files used in this project. Created on PIC24 Mikroemdia Board. This project uses the Microchip Libraries for Applications (MLA) and the Graphics Object Layer (GOL) library provided by Microchip. The chip on the board is "PIC24EP512GU810". 
+
+The project is made by:
   1. Gagan Batra
   2. Kavya Rani Aerva
